@@ -1,0 +1,89 @@
+import "hashes/sha256/512bit" as sha256;
+import "utils/casts/u32_to_field" as toField;
+
+const u32 VECTOR_SIZE = 16;
+const u32 POPULATION_SIZE = 8;
+const u32 TOURNAMENT_SIZE = 2;
+
+def calculate_commitments(u32[POPULATION_SIZE][VECTOR_SIZE] population) -> field {
+    u32[8] comm0 = sha256(population[0][0..8], population[0][8..16]); 
+    u32[8] comm1 = sha256(population[1][0..8], population[1][8..16]);
+    u32[8] comm2 = sha256(population[2][0..8], population[2][8..16]); 
+    u32[8] comm3 = sha256(population[3][0..8], population[3][8..16]); 
+    u32[8] comm4 = sha256(population[4][0..8], population[4][8..16]); 
+    u32[8] comm5 = sha256(population[5][0..8], population[5][8..16]); 
+    u32[8] comm6 = sha256(population[6][0..8], population[6][8..16]); 
+    u32[8] comm7 = sha256(population[7][0..8], population[7][8..16]); 
+    return toField(comm0[0] + comm1[0] + comm2[0] + comm3[0] + comm4[0] + comm5[0] + comm6[0] + comm7[0]); 
+} 
+ 
+def evaluate_F2(u32[POPULATION_SIZE][VECTOR_SIZE] population) -> u32[POPULATION_SIZE] { 
+    u32[POPULATION_SIZE] mut fitness_values = [0; POPULATION_SIZE]; 
+    for u32 i in 0..POPULATION_SIZE { 
+        u32 mut fitness_value = 0; 
+        for u32 j in 0..VECTOR_SIZE-1 { 
+            fitness_value = fitness_value + 100 * (population[i][j+1] - population[i][j] * population[i][j]) * (population[i][j+1] - population[i][j] * population[i][j]); 
+            fitness_value = fitness_value + (1 - population[i][j]) * (1 - population[i][j]); 
+        } 
+        fitness_values[i] = fitness_value; 
+    } 
+    return fitness_values; 
+} 
+
+def select_parents(u32[POPULATION_SIZE][VECTOR_SIZE] population, u32[POPULATION_SIZE] fitnesses, u32[POPULATION_SIZE][TOURNAMENT_SIZE] candidates) -> u32[POPULATION_SIZE][VECTOR_SIZE] { 
+    u32[POPULATION_SIZE][VECTOR_SIZE] mut parents = [[0; VECTOR_SIZE]; POPULATION_SIZE]; 
+    for u32 i in 0..POPULATION_SIZE { 
+        u32 mut best_fitness = 4294967295; 
+        u32 mut best_fitness_index = 0; 
+        for u32 j in 0..TOURNAMENT_SIZE { 
+            best_fitness_index = if fitnesses[candidates[i][j]] < best_fitness { j } else { best_fitness_index }; 
+            best_fitness = if fitnesses[candidates[i][j]] < best_fitness { fitnesses[candidates[i][j]] } else { best_fitness }; 
+        } 
+        for u32 j in 0..VECTOR_SIZE { 
+            parents[i][j] = population[candidates[i][best_fitness_index]][j]; 
+        } 
+    } 
+    return parents; 
+} 
+
+def apply_crossover(u32[POPULATION_SIZE][VECTOR_SIZE] parents, u32[POPULATION_SIZE] cutoffs) -> u32[POPULATION_SIZE][VECTOR_SIZE] { 
+    u32[POPULATION_SIZE][VECTOR_SIZE] mut children = [[0; VECTOR_SIZE]; POPULATION_SIZE]; 
+    for u32 i in 0..POPULATION_SIZE/2 { 
+        for u32 j in 0..VECTOR_SIZE { 
+            children[2*i][j] = if j <= cutoffs[i] { parents[2*i][j] } else { parents[2*i+1][j] }; 
+            children[2*i+1][j] = if j <= cutoffs[i] { parents[2*i+1][j] } else { parents[2*i][j] }; 
+        } 
+    } 
+    return children; 
+}
+
+def apply_mutation(u32[POPULATION_SIZE][VECTOR_SIZE] children, u32[POPULATION_SIZE] flips) -> u32[POPULATION_SIZE][VECTOR_SIZE] { 
+    u32[POPULATION_SIZE][VECTOR_SIZE] mut next_population = [[0; VECTOR_SIZE]; POPULATION_SIZE]; 
+    for u32 i in 0..POPULATION_SIZE { 
+        for u32 j in 0..VECTOR_SIZE { 
+            next_population[i][j] = if (j == flips[i]) { 1 - children[i][j] } else { children[i][j] }; 
+        } 
+    } 
+    return next_population; 
+}
+
+def measure(u32[POPULATION_SIZE] next_fitness_values) -> field { 
+    u32 mut best_fitness = 4294967295; 
+    for u32 i in 0..POPULATION_SIZE { 
+        best_fitness = if next_fitness_values[i] < best_fitness { next_fitness_values[i] } else { best_fitness }; 
+    } 
+    return toField(best_fitness); 
+} 
+
+def main(private u32[POPULATION_SIZE][VECTOR_SIZE] population, private u32[POPULATION_SIZE][TOURNAMENT_SIZE] candidates, private u32[POPULATION_SIZE] cutoffs, private u32[POPULATION_SIZE] flips, public field commitment, public field next_commitment, public field next_fitness) -> field { 
+    u32[POPULATION_SIZE] fitness_values = evaluate_F2(population); 
+    u32[POPULATION_SIZE][VECTOR_SIZE] parents = select_parents(population, fitness_values, candidates); 
+    u32[POPULATION_SIZE][VECTOR_SIZE] children = apply_crossover(parents, cutoffs); 
+    u32[POPULATION_SIZE][VECTOR_SIZE] next_population = apply_mutation(children, flips); 
+    u32[POPULATION_SIZE] next_fitness_values = evaluate_F2(next_population); 
+    field best_fitness_value = measure(next_fitness_values); 
+    field population_commitment = calculate_commitments(population); 
+    field next_population_commitment = calculate_commitments(next_population); 
+    field is_correct = if (best_fitness_value == next_fitness && population_commitment == commitment && next_population_commitment == next_commitment) { 1 } else { 0 }; 
+    return is_correct; 
+}
