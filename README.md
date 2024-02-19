@@ -109,6 +109,8 @@ The challenger $\mathcal{C}$ would return $1$ in case there was the adversary $\
 
 <img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/eq5.png" width="60%"/>
 
+where $\lambda$ is the security parameter and $\pi'$ is the forged proof. According to the given equation, the challenger (i.e. verifier) $\mathcal{C}$ should not correctly verify the forged proof with the given incorrect population commitments as long as there is no adversary to be able to break zk-SNARK.
+
 The _Sphere_ function is unimodal with single global minimum, convex and symmetric as follows:
 
 $$
@@ -145,7 +147,7 @@ Propose Solution...   Claim Reward...
 2. Jacob Eberhardt and Stefan Tai. Zokrates-scalable privacy-preserving off-chain computations. In IEEE International Conference on Internet of Things (iThings) and Cyber, Physical and Social Computing (CPSCom), pages 1084–1091, 2018.
 3. Eli Ben-Sasson, Alessandro Chiesa, Eran Tromer, and Madars Virza. Succinct {Non-Interactive} zero knowledge for a von neumann architecture. In 23rd USENIX Security Symposium (USENIX Security 14), pages 781–796, 2014.
 4. Tianyi Liu, Xiang Xie, and Yupeng Zhang. Zkcnn: Zero knowledge proofs for convolutional neural network predictions and accuracy. In Proceedings of the 2021 ACM SIGSAC Conference on Computer and Communications Security, pages 2968–2985, 2021.
-5. Jason G Digalakis and Konstantinos G Margaritis. On be
+5. Jason G Digalakis and Konstantinos G Margaritis. On benchmarking functions for genetic algorithms. International journal of computer mathematics, 77(4):481–506, 2001.
 
 # Disclaimer
 
