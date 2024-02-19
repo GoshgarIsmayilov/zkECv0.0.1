@@ -80,7 +80,7 @@ $$
 \end{align}
 $$
 
-where the population $P^{t+1}_i$ is evolved from the population $P^{t}_i$. The proof generation needs the private values including these populations and the public values including their commitments $c_t^{P_i}$, $c_{t+1}^{P_i}$ the evaluation function $F$ and the proving key $pk$. The $\pi[A, B, C]$ represents the generated proof $\pi$ with its three elliptic curve point components as $A, B, C$ while $ZkGen$ is the zero-knowledge proof generation function. Afterward, the smart contract verifies the proofs on-chain by fetching only the public values as follows:
+where the population $P_i^{t+1}$ is evolved from the population $P_i^{t}$. The proof generation needs the private values including these populations and the public values including their commitments $c_{t+1}^{P_i}$ and $c_{t+1}^{P_i}$ the evaluation function $F$ and the proving key $pk$. The $\pi[A, B, C]$ represents the generated proof $\pi$ with its three elliptic curve point components as $A, B, C$ while $ZkGen$ is the zero-knowledge proof generation function. Afterward, the smart contract verifies the proofs on-chain by fetching only the public values as follows:
 
 $$
 \begin{align}
@@ -97,31 +97,20 @@ __Proof__. Let $\mathcal{A}$ and $\mathcal{B}$ be adversaries (i.e. provers) tha
 
 - The challenger $\mathcal{C}$ runs the trusted setup to generate the proving $pk$ and verification $vk$ keys.
 
-- The adversary $\mathcal{A}$ samples a random population $P_t^A$ and later forwards its commitment $c_t^{P_A} \leftarrow Comm (P_t^{A}) $ to the challenger $\mathcal{C}$. 
+- The adversary $\mathcal{A}$ samples a random population $P_t^A$ and later forwards its commitment $c_{t}^{P_{A}} \leftarrow Comm (P_t^{A})$ to the challenger $\mathcal{C}$. 
 
-- The adversary $\mathcal{A}$ performs \textit{ECM} over the population $P_t^{A}$ for one generation $P_{t+1}^{A} \leftarrow ECM_t^{t+1} (P_t^A)$ and forwards its commitment $c_{t+1}^{P_A} \leftarrow Comm(P_{t+1}^{A}) $ to the challenger $\mathcal{C}$. 
+- The adversary $\mathcal{A}$ performs _ECM_ over the population $P_t^{A}$ for one generation $P_{t+1}^{A} \leftarrow ECM_t^{t+1} (P_t^A)$ and forwards its commitment $c_{t+1}^{P_A} \leftarrow Comm(P_{t+1}^{A})$ to the challenger $\mathcal{C}$. 
 
-- The adversary $\mathcal{A}$ invokes the adversary $\mathcal{B}$ to forward the forged proof with the incorrect commitment $c^{P^{'}_A}_{t+1} \neq c^{P_A}_{t+1}$ as $\pi'[A, B, C] \leftarrow ZkGen(P^{t+1}_i \leftarrow P^{t}_i, [c^{P^{'}_A}_{t+1}, c^{P_A}_t,  F(P^{t+1}_A), pk])$ to the challenger $\mathcal{C}$. 
+- The adversary $\mathcal{A}$ invokes the adversary $\mathcal{B}$ to forward the forged proof with the incorrect commitment $c_{t+1}^{P_A^{'}} \neq c_{t+1}^{P_A}$ as $\pi'[A, B, C] \leftarrow ZkGen(P_i^{t+1} \leftarrow P_i^{t}, [c_{t+1}^{P_A^{'}}, c_t^{P_A},  F(P_A^{t+1}), pk])$ to the challenger $\mathcal{C}$. 
 
 - The challenger $\mathcal{C}$ returns $1$ if the forged proof is correctly verified $b \leftarrow ZkVfy(\pi'[A, B, C], [c^{P_i}_{t+1}, c^{P_i}_t,  F(P^{t+1}_i), vk])$ and $0$ otherwise.
 
 The challenger $\mathcal{C}$ would return $1$ in case there was the adversary $\mathcal{B}$ to be able to the forge that proof. However, this fundamentally contradicts the security assumption of zk-SNARK. More concisely: 
 
 $$
-\begin{equation}
-\begin{split} \left\vert Pr  
-    \left[ b \leftarrow ZkVfy(\pi', vk]) = 1 \middle\vert
-    \begin{aligned}
-         & (pk, vk) \leftarrow Setup(\lambda) \\
-         & P^{A}_t \overset{\$}{\leftarrow} \{0,1\}^{L \ast M} \\
-         & P^{A}_{t+1} \leftarrow ECM^{t+1}_t(P^{A}_t) \\
-         & c^{P_A}_t \leftarrow Comm(P^{A}_t) \\
-         & c^{P_A}_{t+1} \leftarrow Comm(P^{A}_{t+1}) \\
-         & \pi' \leftarrow ZkGen(P^{t+1}_i \leftarrow P^{t}_i, pk) \\
-    \end{aligned}
-    \right] \right\vert = 0
-\end{split}
-\end{equation}
+\begin{align}
+F_1(x_0, x_1, ..., x_{V-1}) = \sum_{i=0}^{V-1} x^2_i = x^2_0 + x^2_1 + ... + x^2_{V-1}
+\end{align}
 $$
 
 where $\lambda$ is the security parameter and $\pi'$ is the forged proof. According to the given equation, the challenger (i.e. verifier) $\mathcal{C}$ should not correctly verify the forged proof with the given incorrect population commitments as long as there is no adversary to be able to break zk-SNARK.
