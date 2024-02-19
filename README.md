@@ -107,13 +107,7 @@ __Proof__. Let $\mathcal{A}$ and $\mathcal{B}$ be adversaries (i.e. provers) tha
 
 The challenger $\mathcal{C}$ would return $1$ in case there was the adversary $\mathcal{B}$ to be able to the forge that proof. However, this fundamentally contradicts the security assumption of zk-SNARK. More concisely: 
 
-$$
-\begin{align}
-F_1(x_0, x_1, ..., x_{V-1}) = \sum_{i=0}^{V-1} x^2_i = x^2_0 + x^2_1 + ... + x^2_{V-1}
-\end{align}
-$$
-
-where $\lambda$ is the security parameter and $\pi'$ is the forged proof. According to the given equation, the challenger (i.e. verifier) $\mathcal{C}$ should not correctly verify the forged proof with the given incorrect population commitments as long as there is no adversary to be able to break zk-SNARK.
+<img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/eq5.png" width="60%"/>
 
 The _Sphere_ function is unimodal with single global minimum, convex and symmetric as follows:
 
@@ -123,7 +117,6 @@ F_1(x_0, x_1, ..., x_{V-1}) = \sum_{i=0}^{V-1} x^2_i = x^2_0 + x^2_1 + ... + x^2
 \end{align}
 $$
 
-\noindent
 where $V$ is the vector size and $x_i \in \{0, 1\}$ is the decision variable. The global minimum of the function is located at $(x_0, x_1, ..., x_{V-1}) = (0, 0, ..., 0)$.
 
 The _Rosenbrock_ function is defined as follows:
@@ -134,11 +127,17 @@ F_2(x_0, x_1, ..., x_{V-1}) = \sum_{i=0}^{V-2} \left[ 100 \cdot (x_{i+1} - x_{i}
 \end{align}
 $$
 
-\noindent
-where $x_i \in \{0, 1\}$ is again the decision variable. The global minimum of the function lies in $(x_0, x_1, ..., x_{V-1}) = (1, 1, ..., 1)$. 
+where $x_i \in {0, 1}$ is again the decision variable. The global minimum of the function lies in $(x_0, x_1, ..., x_{V-1}) = (1, 1, ..., 1)$. 
 
 # Web UI Visualization
 
+Deploy Contract...   Register...  
+
+<img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/deploy.png" width="30%"/> <img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/register.png" width="30%"/>
+
+Propose Solution...   Claim Reward... 
+
+<img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/propose.png" width="30%"/> <img src="https://github.com/GoshgarIsmayilov/zkECv0.0.1/blob/main/Auxilliary/Screenshots/claim.png" width="30%"/>
 
 # Publications to Read
 
