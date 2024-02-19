@@ -1,24 +1,18 @@
 import "hashes/sha256/512bit" as sha256;
-import "utils/pack/u32/pack256" as pack256;
-import "utils/casts/field_to_u32" as toU32;
+import "utils/casts/u32_to_field" as toField;
 
 const u32 VECTOR_SIZE = 16;
 const u32 POPULATION_SIZE = 8;
+const u32 TOURNAMENT_SIZE = 2;
 
 def main(u32[POPULATION_SIZE][VECTOR_SIZE] population) -> field {
-
-	u32[POPULATION_SIZE] mut solution_commitments = [0; POPULATION_SIZE];
-
-	for u32 i in 0..POPULATION_SIZE {
-		u32[8] solution_commitment_unpacked = sha256(population[i][0..8], population[i][8..16]);
-		solution_commitments[i] = toU32(pack256(solution_commitment_unpacked));
-
-		for u32 j in 0..VECTOR_SIZE {
-			assert(population[i][j] == 0 || population[i][j] == 1);
-		}
-	}
-
-	u32[8] population_commitment_unpacked = sha256(solution_commitments[0..8], solution_commitments[0..8]);
-	field population_commitment = pack256(population_commitment_unpacked);
-	return population_commitment;
+	u32[8] comm0 = sha256(population[0][0..8], population[0][8..16]);
+	u32[8] comm1 = sha256(population[1][0..8], population[1][8..16]);
+	u32[8] comm2 = sha256(population[2][0..8], population[2][8..16]);
+	u32[8] comm3 = sha256(population[3][0..8], population[3][8..16]);
+	u32[8] comm4 = sha256(population[4][0..8], population[4][8..16]);
+	u32[8] comm5 = sha256(population[5][0..8], population[5][8..16]);
+	u32[8] comm6 = sha256(population[6][0..8], population[6][8..16]);
+	u32[8] comm7 = sha256(population[7][0..8], population[7][8..16]);
+	return toField(comm0[0] + comm1[0] + comm2[0] + comm3[0] + comm4[0] + comm5[0] + comm6[0] + comm7[0]);
 }
